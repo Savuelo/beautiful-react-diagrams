@@ -7,8 +7,8 @@ on:
   push:
     branches: [master]
     paths-ignore:
-      - 'docs/**'
-      - '*.md'
+      - "docs/**"
+      - "*.md"
 jobs:
   ci-cd:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
@@ -33,13 +33,6 @@ jobs:
       - name: Build website (Github pages)
         run: npm run build-doc --if-present
 
-      - name: Publish website on GitHub Pages
-        uses: crazy-max/ghaction-github-pages@v2.1.2
-        with:
-          build_dir: dist-ghpages
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v1.1.1
         with:
@@ -48,12 +41,3 @@ jobs:
       - name: Prepare distribution
         if: "contains(steps.projectinfo.outputs.version, '-')"
         run: cp -r ./@types ./dist/@types && cp package.json index.d.ts README.md LICENSE CHANGELOG.md CONTRIBUTING.md CODE_OF_CONDUCT.md ./dist
-
-      - name: Publish
-        if: "contains(steps.projectinfo.outputs.version, '-')"
-        run: |
-          npm pack
-          npm publish --tag next
-        working-directory: ./dist
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
